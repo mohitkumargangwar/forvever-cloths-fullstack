@@ -1,0 +1,21 @@
+# Logs
+logs
+*.log
+
+# Node modules
+Frontend/node_modules
+backEnd/node_modules
+
+# Env files
+Frontend/.env
+backEnd/.env
+
+# VS Code
+.history
+
+# Mac
+.DS_Store
+
+# Build
+dist
+build
