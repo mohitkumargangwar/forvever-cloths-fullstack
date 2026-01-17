@@ -79,6 +79,10 @@ function App() {
   // const products = useSelector(state => state.products.items);
   // const dispatch = useDispatch();
 
+
+
+  console.log("BACKEND URL =", import.meta.env.VITE_BACKEND_URL);
+
   return (
     <Provider store={store}>
       <BrowserRouter>
