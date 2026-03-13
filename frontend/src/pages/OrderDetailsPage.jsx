@@ -3,6 +3,7 @@ import { Link, useParams, Navigate } from "react-router";
 import { FiPackage, FiTruck, FiHome, FiShoppingBag, FiSend, FiXCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOrderDetails } from "../redux/slice/orderSlice";
+import { ListShimmer } from "../components/Common/ShimmerLoader";
 
 /* ================= ORDER DETAILS PAGE ================= */
 
@@ -19,8 +20,8 @@ export default function OrderDetailsPage() {
   /* ================= SAFETY GUARD ================= */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 text-lg">Loading order details...</p>
+      <div className="min-h-screen bg-gray-50 py-6">
+        <ListShimmer rows={5} />
       </div>
     );
   }

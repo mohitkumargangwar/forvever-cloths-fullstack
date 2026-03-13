@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
 import { clearCart } from "../redux/slice/cartSlice";
+import { ListShimmer } from "../components/Common/ShimmerLoader";
 
 const OrderConfirmationPage = () => {
  const dispatch = useDispatch();
@@ -11,8 +12,8 @@ const OrderConfirmationPage = () => {
 
 if (!checkout) {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-600 text-lg">Loading order details...</p>
+    <div className="min-h-screen bg-gray-50 py-6">
+      <ListShimmer rows={4} />
     </div>
   );
 }

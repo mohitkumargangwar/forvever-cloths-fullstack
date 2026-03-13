@@ -191,9 +191,7 @@ export default function FilterSidebar() {
 
   return (
     <div
-      className="w-64 h-screen sticky top-0 p-6 border-r bg-white overflow-y-auto space-y-8"
-      data-lenis-prevent-wheel
-      data-lenis-prevent-touch
+      className="w-64 h-screen lg:h-full sticky top-0 p-6 border-r bg-white overflow-y-auto space-y-8"
     >
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-bold text-gray-900">Filters</h3>

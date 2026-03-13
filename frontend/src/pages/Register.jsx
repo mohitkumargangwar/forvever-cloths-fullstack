@@ -5,6 +5,7 @@ import registerImg from "../assets/registerImg.webp";
 import {registerUser} from "../redux/slice/authSlice";
 import { mergeCart } from "../redux/slice/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 
 export default function Register() {
@@ -46,11 +47,55 @@ export default function Register() {
     }
   }, [user, cart, guestId, isCheckoutRedirect, navigate, dispatch, location.state]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(registerUser({name: fullName, email, password, confirmPassword})).then(() => {
-      navigate(location.pathname, { state: { justLoggedIn: true } });
-    });
+
+    if (!fullName || !email || !password || !confirmPassword) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    const resultAction = await dispatch(registerUser({name: fullName, email, password, confirmPassword}));
+
+    if (registerUser.fulfilled.match(resultAction)) {
+      toast.success("Registration successful!");
+      navigate(location.pathname, { state: { justLoggedIn: true }, replace: true });
+      return;
+    }
+
+    const errorMessage = (
+      resultAction.payload?.message ||
+      resultAction.error?.message ||
+      "Registration failed. Please try again."
+    ).toLowerCase();
+
+    if (errorMessage.includes("already")) {
+      toast.error("Account already exists. Please login.");
+      return;
+    }
+
+    if (errorMessage.includes("valid") || errorMessage.includes("invalid")) {
+      toast.error("Invalid registration details. Please check and try again.");
+      return;
+    }
+
+    toast.error(resultAction.payload?.message || "Registration failed. Please try again.");
   };
 
   return (

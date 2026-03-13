@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAdminProducts } from "../redux/slice/adminProductSlice";
 import { fetchAllOrders } from "../redux/slice/adminOrderSlice";
+import { TableShimmer } from "../components/Common/ShimmerLoader";
 
 const AdminHomePage = () => {
   const dispatch = useDispatch();
@@ -58,16 +59,22 @@ const AdminHomePage = () => {
   const isLoading = productsLoading || ordersLoading;
   const errorMessage = productsError || ordersError;
 
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 min-h-screen">
+        <div className="p-4 sm:p-6 lg:p-8">
+          <TableShimmer rows={8} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="p-4 sm:p-6 lg:p-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">
           Admin Dashboard
         </h1>
-
-        {isLoading && (
-          <p className="text-sm text-gray-600 mb-4">Loading dashboard...</p>
-        )}
 
         {errorMessage && (
           <p className="text-sm text-red-600 mb-4">Error: {errorMessage}</p>

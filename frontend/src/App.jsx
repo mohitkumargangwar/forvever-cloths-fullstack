@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
-import Lenis from "lenis";
 import store from "./redux/store";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { fetchCart } from "./redux/slice/cartSlice";
@@ -11,6 +10,10 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import ContactUs from "./pages/ContactUs";
+import AboutUs from "./pages/AboutUs";
+import FAQs from "./pages/FAQs";
+import Features from "./pages/Features";
 import Collections from "./pages/Collections";
 import ProductDetails from "./components/Products/ProductDetails";
 import CheckOut from "./components/Cart/CheckOut";
@@ -18,8 +21,6 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import { Toaster } from "sonner";
 
-// Lenis CSS import (important)
-import "lenis/dist/lenis.css";
 import MyOrder from "./pages/MyOrder";
 import AdminLayout from "./components/Admin/AdminLayout";
 import AdminHomePage from "./pages/AdminHomePage";
@@ -42,46 +43,33 @@ const ScrollToTop = () => {
 const AppContent = () => {
   const dispatch = useDispatch();
   const { user, guestId } = useSelector((state) => state.auth);
+  const { cart } = useSelector((state) => state.cart);
+  const lastFetchKeyRef = useRef(null);
 
   useEffect(() => {
-    // Fetch cart whenever user or guestId changes
-    if (user?._id || guestId) {
-      dispatch(fetchCart({ userId: user?._id, guestId }));
+    const fetchKey = user?._id ? `user:${user._id}` : guestId ? `guest:${guestId}` : null;
+
+    if (!fetchKey || lastFetchKeyRef.current === fetchKey) return;
+
+    // Only fetch if cart is empty or has no products
+    if (!cart || !cart.products || cart.products.length === 0) {
+      lastFetchKeyRef.current = fetchKey;
+      dispatch(fetchCart(user?._id ? { userId: user._id } : { guestId }));
+    } else {
+      // Mark as fetched even if we skip the API call
+      lastFetchKeyRef.current = fetchKey;
     }
-  }, [user?._id, guestId, dispatch]);
+  }, [user?._id, guestId, dispatch, cart]);
 
   return null;
 };
 
 function App() {
-  // Lenis smooth scroll effect
-  useEffect(() => {
-    const lenis = new Lenis({
-      lerp: 0.08, // smoothness
-      duration: 1.2,
-      smooth: true,
-      smoothTouch: false,
-    });
-
-    let rafId;
-    function raf(time) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
-
   // const products = useSelector(state => state.products.items);
   // const dispatch = useDispatch();
 
 
 
-  console.log("BACKEND URL =", import.meta.env.VITE_BACKEND_URL);
 
   return (
     <Provider store={store}>
@@ -95,6 +83,10 @@ function App() {
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Home />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="contact" element={<ContactUs />} />
+            <Route path="about" element={<AboutUs />} />
+            <Route path="faqs" element={<FAQs />} />
+            <Route path="features" element={<Features />} />
             <Route path="collections/:collection" element={<Collections />} />
             <Route path="product/:id" element={<ProductDetails />} />
             <Route path="checkout" element={<CheckOut />} />

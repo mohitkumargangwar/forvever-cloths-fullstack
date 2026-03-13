@@ -60,7 +60,8 @@ function NewArrivals() {
   {/* scroller */}
   <div 
     ref={scrollRef}
-    className="container mx-auto overflow-x-scroll hide-scrollbar flex space-x-6 relative hover:rounded-lg">
+    className="container mx-auto overflow-x-scroll [&::-webkit-scrollbar]:hidden flex space-x-6 relative hover:rounded-lg"
+    style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
     {newArrivals?.map((product, index) => (
       
         <div
@@ -71,7 +72,7 @@ function NewArrivals() {
         <img
             src={product.images[0]?.url}
             alt={product.images[0]?.altText || product.name}
-            className="w-full h-[500px] object-cover rounded-lg hover:border-2 border-blue-500 transition-all duration-300"
+          className="w-full h-[500px] object-cover rounded-lg border-2 border-transparent hover:border-blue-500 transition-colors duration-300"
             loading="lazy"
         />
         <div className="absolute bottom-0 left-0 right-0  backdrop-blur-xs  p-4 rounded-b-lg">

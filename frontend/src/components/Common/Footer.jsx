@@ -2,10 +2,11 @@ import { NavLink } from "react-router";
 import { TbBrandMeta } from "react-icons/tb";
 import { IoLogoInstagram } from "react-icons/io5";
 import { RiTwitterXLine } from "react-icons/ri";
-import { FiPhoneCall } from "react-icons/fi";
+import { FiPhoneCall, FiArrowRight } from "react-icons/fi";
 import { useState } from "react";
 import axiosInstance from "./axiosInstance";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 function Footer() {
   const [email, setEmail] = useState("");
@@ -35,83 +36,155 @@ function Footer() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
   return (
-    <footer className="bg-gray-50 border-t pt-16 pb-8">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 px-4 lg:px-0">
+    <motion.footer 
+      className="bg-gradient-to-b from-gray-900 to-black text-white border-t border-gray-800"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
+        className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 px-4 sm:px-6 lg:px-0 py-16 lg:py-20"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.1 }}
+      >
         
         {/* Newsletter Section */}
-        <div className="md:col-span-2 lg:col-span-1">
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+        <motion.div className="sm:col-span-2 lg:col-span-1" variants={itemVariants}>
+          <h3 className="text-base font-bold text-white uppercase tracking-wider mb-4">
             Join our Newsletter
           </h3>
-          <p className="text-gray-600 text-sm mb-4">
-            Get 10% off your first order when you sign up for our emails.
+          <p className="text-gray-300 text-sm mb-6 leading-relaxed">
+            Get 10% off your first order when you sign up for our exclusive emails.
           </p>
-          <form className="flex mt-4" onSubmit={handleSubscribe}>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="p-3 w-full text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-black transition-all"
-              required
-              disabled={loading}
-            />
-            <button
-              type="submit"
-              className="bg-black text-white px-5 text-sm rounded-r-md hover:bg-gray-800 transition-colors disabled:bg-gray-400"
-              disabled={loading}
-            >
-              {loading ? "Subscribing..." : "Subscribe"}
-            </button>
+          <form className="flex flex-col gap-2" onSubmit={handleSubscribe}>
+            <div className="relative flex">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="p-3 w-full text-sm border-2 border-gray-600 bg-gray-800 text-white rounded-lg focus:outline-none focus:border-white focus:ring-2 focus:ring-white/20 transition-all placeholder-gray-500"
+                required
+                disabled={loading}
+              />
+              <button
+                type="submit"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-white text-black p-2 rounded-md hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
+                title={loading ? "Subscribing..." : "Subscribe"}
+              >
+                <FiArrowRight className="text-lg" />
+              </button>
+            </div>
+            {loading && <p className="text-xs text-gray-400">Subscribing...</p>}
           </form>
-        </div>
+        </motion.div>
 
         {/* Shop Links */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Shop</h3>
-          <ul className="space-y-3 text-gray-600">
-            <li><NavLink to="/collections/all?gender=Men" className="hover:text-black transition-colors">Men's Top Wear</NavLink></li>
-            <li><NavLink to="/collections/all?gender=Women" className="hover:text-black transition-colors">Women's Top Wear</NavLink></li>
-            <li><NavLink to="/collections/all?gender=Men" className="hover:text-black transition-colors">Men's Bottom Wear</NavLink></li>
-            <li><NavLink to="/collections/all?gender=Women" className="hover:text-black transition-colors">Women's Bottom Wear</NavLink></li>
+        <motion.div variants={itemVariants}>
+          <h3 className="text-base font-bold text-white uppercase tracking-wider mb-6">Shop</h3>
+          <ul className="space-y-3">
+            <li><NavLink to="/collections/all?gender=Men" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> Men's Top Wear</NavLink></li>
+            <li><NavLink to="/collections/all?gender=Women" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> Women's Top Wear</NavLink></li>
+            <li><NavLink to="/collections/all?gender=Men" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> Men's Bottom Wear</NavLink></li>
+            <li><NavLink to="/collections/all?gender=Women" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> Women's Bottom Wear</NavLink></li>
           </ul>
-        </div>
+        </motion.div>
 
         {/* Support Links */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Support</h3>
-          <ul className="space-y-3 text-gray-600">
-            <li><NavLink to="/contact" className="hover:text-black transition-colors">Contact Us</NavLink></li>
-            <li><NavLink to="/about" className="hover:text-black transition-colors">About Us</NavLink></li>
-            <li><NavLink to="/faqs" className="hover:text-black transition-colors">FAQs</NavLink></li>
-            <li><NavLink to="/features" className="hover:text-black transition-colors">Features</NavLink></li>
+        <motion.div variants={itemVariants}>
+          <h3 className="text-base font-bold text-white uppercase tracking-wider mb-6">Support</h3>
+          <ul className="space-y-3">
+            <li><NavLink to="/contact" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> Contact Us</NavLink></li>
+            <li><NavLink to="/about" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> About Us</NavLink></li>
+            <li><NavLink to="/faqs" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> FAQs</NavLink></li>
+            <li><NavLink to="/features" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> Features</NavLink></li>
           </ul>
-        </div>
+        </motion.div>
 
         {/* Follow Us & Contact */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Follow Us</h3>
-          <div className="flex items-center space-x-3 mb-6">
-            <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"><TbBrandMeta size={20} /></a>
-            <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"><IoLogoInstagram size={20} /></a>
-            <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"><RiTwitterXLine size={20} /></a>
+        <motion.div variants={itemVariants}>
+          <h3 className="text-base font-bold text-white uppercase tracking-wider mb-6">Follow Us</h3>
+          <div className="flex items-center space-x-3 mb-8">
+            <motion.a 
+              href="#" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-3 bg-gray-800 hover:bg-white hover:text-black rounded-full transition-all duration-300"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+            >
+              <TbBrandMeta size={20} />
+            </motion.a>
+            <motion.a 
+              href="#" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-3 bg-gray-800 hover:bg-white hover:text-black rounded-full transition-all duration-300"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+            >
+              <IoLogoInstagram size={20} />
+            </motion.a>
+            <motion.a 
+              href="#" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-3 bg-gray-800 hover:bg-white hover:text-black rounded-full transition-all duration-300"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+            >
+              <RiTwitterXLine size={20} />
+            </motion.a>
           </div>
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">Call Us</h3>
-          <a href="tel:0123456789" className="flex items-center text-gray-600 hover:text-black transition-colors">
-            <FiPhoneCall className="inline-block mr-2" />
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3">Call Us</h3>
+          <a href="tel:0123456789" className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm group">
+            <span className="p-2 bg-gray-800 rounded-full group-hover:bg-white group-hover:text-black transition-all">
+              <FiPhoneCall className="text-lg" />
+            </span>
             0123-456-789
           </a>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Footer Bottom */}
-      <div className="container mx-auto mt-10 px-4 lg:px-0 border-t border-gray-200 pt-6">
-        <p className="text-gray-500 text-sm text-center">
-          © 2025, CompileTab. All Rights Reserved.
-        </p>
-      </div>
-    </footer>
+      <motion.div 
+        className="container mx-auto px-4 sm:px-6 lg:px-0 border-t border-gray-800 py-8"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-gray-400 text-sm">
+          <p className="text-center sm:text-left">
+            © 2025 Forever Cloths. All Rights Reserved.
+          </p>
+          <div className="flex gap-4">
+            <NavLink to="#" className="hover:text-white transition-colors">Privacy Policy</NavLink>
+            <NavLink to="#" className="hover:text-white transition-colors">Terms of Service</NavLink>
+          </div>
+        </div>
+      </motion.div>
+    </motion.footer>
   );
 }
 

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { FiBox, FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAdminProducts, deleteProduct } from '../../redux/slice/adminProductSlice';
+import { TableShimmer } from '../Common/ShimmerLoader';
 
 const ProductManagement = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,14 @@ const ProductManagement = () => {
     navigate(`/admin/products/${productId}/edit`);
   };
 
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8">
+        <TableShimmer rows={7} />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
@@ -46,7 +55,6 @@ const ProductManagement = () => {
         </Link>
       </div>
 
-      {loading && <p className="text-sm text-gray-600 mb-3">Loading products...</p>}
       {error && <p className="text-sm text-red-600 mb-3">Error: {error}</p>}
 
       {/* Products Content Area */}

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { fetchUserOrders } from "../redux/slice/orderSlice";
+import { ListShimmer } from "../components/Common/ShimmerLoader";
 
 const MyOrder = () => {
   const navigate = useNavigate();
@@ -19,7 +20,13 @@ const MyOrder = () => {
   function handleRowClick(orderId) {
     navigate(`/order/${orderId}`)
   } 
-if (loading) return <p>Loading...</p>
+if (loading) {
+  return (
+    <div className="w-full min-h-screen bg-gray-50 py-6">
+      <ListShimmer rows={6} />
+    </div>
+  );
+}
 if (error) return <p>Error: {error}</p>
 
   return (

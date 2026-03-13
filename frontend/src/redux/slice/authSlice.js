@@ -80,6 +80,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
       // login
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
@@ -87,7 +88,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload; // <-- set user
+        state.user = action.payload; 
         state.error = null;
         console.log("Login successful, user set to:", action.payload);
       })
@@ -95,6 +96,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload?.message || action.error?.message || "Login failed";
       })
+
 
       // register
       .addCase(registerUser.pending, (state) => {

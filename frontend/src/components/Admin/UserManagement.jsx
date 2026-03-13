@@ -7,6 +7,7 @@ import {
   updateAdminUser,
   deleteAdminUser,
 } from "../../redux/slice/adminUserSlice";
+import { ListShimmer } from "../Common/ShimmerLoader";
 
 const UserManagement = () => {
   const dispatch = useDispatch();
@@ -91,6 +92,14 @@ const UserManagement = () => {
   const getAvatar = (name = "User") =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
 
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8">
+        <ListShimmer rows={6} />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
@@ -104,7 +113,6 @@ const UserManagement = () => {
         </div>
       </div>
 
-      {loading && <p className="text-sm text-gray-600 mb-4">Loading users...</p>}
       {error && <p className="text-sm text-red-600 mb-4">Error: {error}</p>}
 
       {/* Add User Form */}

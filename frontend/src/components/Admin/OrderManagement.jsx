@@ -2,6 +2,7 @@ import { FiShoppingBag } from 'react-icons/fi';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllOrders, updateOrderStatus } from '../../redux/slice/adminOrderSlice';
+import { TableShimmer } from '../Common/ShimmerLoader';
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -38,6 +39,14 @@ const OrderManagement = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8">
+        <TableShimmer rows={7} />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
@@ -51,7 +60,6 @@ const OrderManagement = () => {
         </div>
       </div>
 
-      {loading && <p className="text-sm text-gray-600 mb-3 text-center">Loading orders...</p>}
       {error && <p className="text-sm text-red-600 mb-3">Error: {error}</p>}
 
       {/* Orders Content Area */}

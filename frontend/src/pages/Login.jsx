@@ -1,10 +1,11 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import loginImg from "../assets/loginImg.webp";
 import {loginUser} from "../redux/slice/authSlice";
 import { mergeCart, fetchCart } from "../redux/slice/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -33,33 +34,38 @@ export default function Login() {
   // Redirect only after login, not on initial page load
   useEffect(() => {
     if(user && location.state?.justLoggedIn) {
+      const fetchUserCartAndRedirect = () => {
+        dispatch(fetchCart({ userId: user._id }));
+        navigate(isCheckoutRedirect ? "/checkout" : "/");
+      };
+
        if(cart?.products?.length > 0 && guestId) {
         const userToken = localStorage.getItem("userToken");
         if(userToken) {
           console.log("mergeCart parameters:", { guestId, userId: user._id });
           dispatch(mergeCart({ guestId, userId: user._id })).then(() => {
-            // Fetch updated cart after merge
-            dispatch(fetchCart({ userId: user._id, guestId }));
-            navigate(isCheckoutRedirect ? "/checkout" : "/");
+            fetchUserCartAndRedirect();
           }).catch(() => {
-            // Even if merge fails, fetch cart and redirect
-            dispatch(fetchCart({ userId: user._id, guestId }));
-            navigate(isCheckoutRedirect ? "/checkout" : "/");
+            fetchUserCartAndRedirect();
           });
         } else {
-          dispatch(fetchCart({ userId: user._id, guestId }));
-          navigate(isCheckoutRedirect ? "/checkout" : "/");
+          fetchUserCartAndRedirect();
         }
        } else {
         // No guest cart items, just fetch user's cart
-        dispatch(fetchCart({ userId: user._id, guestId }));
-        navigate(isCheckoutRedirect ? "/checkout" : "/");
+        fetchUserCartAndRedirect();
        }
     }
   }, [user, cart, guestId, isCheckoutRedirect, navigate, dispatch, location.state]);
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate inputs
+    if (!email || !password) {
+      toast.error("Please enter email and password");
+      return;
+    }
     
     // Handle Remember Me
     if (rememberMe) {
@@ -69,9 +75,27 @@ export default function Login() {
     }
     
     console.log("Login kar rahe ho:", { email, password });
-    dispatch(loginUser({email, password})).then(() => {
-      navigate(location.pathname, { state: { justLoggedIn: true } });
-    });
+
+    const resultAction = await dispatch(loginUser({ email, password }));
+
+    if (loginUser.fulfilled.match(resultAction)) {
+      toast.success("Login successful!");
+      navigate(location.pathname, { state: { justLoggedIn: true }, replace: true });
+      return;
+    }
+
+    const errorMessage = (
+      resultAction.payload?.message ||
+      resultAction.error?.message ||
+      "Invalid email or password. Please try again."
+    ).toLowerCase();
+
+    if (errorMessage.includes("invalid") || errorMessage.includes("invaild") || errorMessage.includes("credential")) {
+      toast.error("Invalid email or password. Please try again.");
+      return;
+    }
+
+    toast.error(resultAction.payload?.message || "Login failed. Please try again.");
   };
 
   return (

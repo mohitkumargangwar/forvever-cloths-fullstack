@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import api from "../../components/Common/axiosInstance";
 
 // Helper function to load cart from localStorage
 const loadCartFromStorage = () => {
@@ -17,9 +18,11 @@ export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async ({ userId, guestId }, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/cart`, {
-        params: { userId, guestId },
-      });
+      const response = userId
+        ? await api.get("/api/cart")
+        : await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/cart`, {
+            params: guestId ? { guestId } : {},
+          });
       return response.data;
     } catch (error) {
       // If cart not found (404), return empty cart instead of error
@@ -142,8 +145,12 @@ const cartSlice = createSlice({
 
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.cart = action.payload;
-        saveCartToStorage(action.payload);
+        // Only update cart if we got products from backend, or if current cart is empty
+        if (action.payload?.products?.length > 0 || state.cart?.products?.length === 0) {
+          state.cart = action.payload;
+          saveCartToStorage(action.payload);
+        }
+        // If backend returns empty but we have items in state, keep the existing cart
       })
 
       .addCase(fetchCart.rejected, (state, action) => {

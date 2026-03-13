@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { createCheckout } from "../../redux/slice/checkoutSlice";
 import PayPalButton from "./PayPalButton";
+import { CheckoutShimmer } from "../Common/ShimmerLoader";
 
 // ===== Main Component =====
 export default function CheckOut() {
@@ -85,24 +86,24 @@ export default function CheckOut() {
     }
   };
 
-  if (loading) return <p>Loading Cart...</p>;
+  if (loading) return <CheckoutShimmer />;
   if (error) return <p>Error loading: {error}</p>;
   if (!cart || !cart.products || cart.products.length === 0) {
     return <p>Your cart is empty.</p>;
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="mx-auto grid max-w-full grid-cols-1 gap-x-12 gap-y-12 px-4 py-3 sm:px-6 lg:px-12 lg:grid-cols-2">
+    <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen pb-32 lg:pb-0">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-12 gap-y-12 px-4 py-8 sm:px-6 lg:px-12 lg:grid-cols-2">
         {/* RIGHT SECTION (Order Summary) */}
         <OrderSummary cart={cart} />
 
         {/* LEFT SECTION (Shipping Form) */}
-        <div className="rounded-lg bg-white p-8 shadow-lg border border-gray-100">
-          <h2 className="text-2xl font-bold uppercase text-gray-800 tracking-wide text-center">
+        <div className="rounded-xl bg-white p-6 sm:p-8 shadow-2xl border border-gray-100 order-first lg:order-last">
+          <h2 className="text-2xl font-bold uppercase text-gray-800 tracking-wide text-center mb-4">
             Shipping Details
           </h2>
-          <form onSubmit={handleCreateCheckOut} className="mt-3 space-y-8">
+          <form onSubmit={handleCreateCheckOut} className="mt-3 space-y-6">
             {/* Contact */}
             <FormSection>
               <FormInput
@@ -180,8 +181,8 @@ export default function CheckOut() {
 // ===== Reusable Components =====
 
 const FormSection = ({ title, children }) => (
-  <div className="border-b border-gray-200">
-    <h3 className=" text-lg font-semibold text-gray-700">{title}</h3>
+  <div className="pb-6 border-b border-gray-200 last:border-b-0">
+    {title && <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">{title}</h3>}
     <div className="space-y-4">{children}</div>
   </div>
 );
@@ -197,7 +198,7 @@ const FormInput = ({
   <div>
     <label
       htmlFor={name}
-      className="block text-sm font-medium text-gray-600 mb-1"
+      className="block text-sm font-semibold text-gray-700 mb-2"
     >
       {label}
     </label>
@@ -209,9 +210,9 @@ const FormInput = ({
       onChange={(e) =>
         onChange((prev) => ({ ...prev, [name]: e.target.value }))
       }
-      className="w-full rounded-md border border-gray-300 p-3 shadow-sm 
-                 focus:border-black focus:ring-2 focus:ring-black/20 
-                 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+      className="w-full rounded-lg border-2 border-gray-200 p-3 sm:p-4 text-base shadow-sm 
+                 focus:border-black focus:ring-2 focus:ring-black/10 
+                 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300"
       disabled={disabled}
       required
     />
@@ -224,26 +225,31 @@ const PaymentSection = ({ checkoutId, totalPrice, onPaymentSuccess }) => {
   };
 
   return (
-    <div>
-      {!checkoutId ? (
-        <button
-          type="submit"
-          className="w-full rounded-md bg-gradient-to-r from-black to-gray-800 py-3 text-white font-bold hover:from-gray-900 hover:to-black transition shadow-md"
-        >
-          Continue to Payment
-        </button>
-      ) : (
-        <div className="border-t border-gray-200 pt-6">
-          <h3 className="mb-4 text-lg font-semibold text-gray-700">
-            Pay with PayPal
-          </h3>
-          <PayPalButton
-            amount={totalPrice}
-            onSuccess={onPaymentSuccess}
-            onError={handlePaymentError}
-          />
-        </div>
-      )}
+    <div className="fixed bottom-0 left-0 right-0 lg:static bg-white lg:bg-transparent border-t-2 lg:border-t-0 border-gray-200 p-4 sm:p-6 shadow-2xl lg:shadow-none z-40 lg:z-auto rounded-t-2xl lg:rounded-none">
+      <div className="max-w-7xl mx-auto">
+        {!checkoutId ? (
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-gradient-to-r from-black via-gray-900 to-gray-800 py-3 sm:py-4 text-white font-bold text-base sm:text-lg hover:from-gray-900 hover:via-black hover:to-gray-900 transition shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+          >
+            Continue to Payment
+          </button>
+        ) : (
+          <div className="space-y-4">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800">
+              Complete Your Payment
+            </h3>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-800">💳 Secure payment powered by PayPal</p>
+            </div>
+            <PayPalButton
+              amount={totalPrice}
+              onSuccess={onPaymentSuccess}
+              onError={handlePaymentError}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -263,14 +269,14 @@ const OrderSummary = ({ cart }) => {
   const totalPrice = subtotalValue + shippingAmount;
 
   return (
-    <div className="lg:order-last">
-      <div className="rounded-lg bg-white p-8 shadow-lg border border-gray-100 h-fit">
+    <div className="lg:order-first">
+      <div className="rounded-xl bg-white p-6 sm:p-8 shadow-2xl border border-gray-100 h-fit sticky top-24 lg:relative">
         {/* Mobile Accordion Header */}
         <div
-          className="flex justify-between items-center lg:hidden cursor-pointer"
+          className="flex justify-between items-center lg:hidden cursor-pointer pb-4 border-b border-gray-200"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <h2 className="text-2xl uppercase font-semibold text-gray-800 ">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
             Order Summary
           </h2>
           {isOpen ? (
@@ -281,7 +287,7 @@ const OrderSummary = ({ cart }) => {
         </div>
 
         {/* Desktop Header */}
-        <h2 className="hidden lg:block mb-6 text-2xl uppercase font-bold text-gray-800 text-center">
+        <h2 className="hidden lg:block mb-6 text-2xl font-bold text-gray-800 text-center">
           Order Summary
         </h2>
 
@@ -290,12 +296,11 @@ const OrderSummary = ({ cart }) => {
           className={`transition-all duration-300 ease-in-out overflow-hidden 
                       ${
                         isOpen
-                          ? "max-h-screen opacity-100 mt-6"
-                          : "max-h-0 opacity-0"
-                      } 
-                      lg:max-h-full lg:opacity-100`}
+                          ? "max-h-screen opacity-100 mt-4 lg:mt-0"
+                          : "max-h-0 opacity-0 lg:max-h-full lg:opacity-100"
+                      }`}
         >
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             {cart.products.map((product, index) => {
               const uniqueKey = `${product._id || product.id}-${product.size}-${
                 product.color
@@ -303,55 +308,52 @@ const OrderSummary = ({ cart }) => {
               return (
                 <div
                   key={uniqueKey || index}
-                  className="flex items-start justify-between"
+                  className="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-b-0"
                 >
-                  <div className="flex items-start">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-20 h-20 object-cover rounded-md mr-4"
-                      loading="lazy"
-                    />
-                    <div>
-                      <p className="font-semibold text-gray-800">
-                        {product.name}
-                      </p>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Size: {product.size} | Color: {product.color}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Qty: {product.quantity || 1}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800 mt-2">
-                        ${Number(product.price).toFixed(2)}
-                      </p>
-                    </div>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg flex-shrink-0"
+                    loading="lazy"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-800 text-sm sm:text-base truncate">
+                      {product.name}
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                      {product.size} • {product.color}
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-600">
+                      Qty: {product.quantity || 1}
+                    </p>
+                    <p className="text-sm sm:text-base font-bold text-gray-900 mt-2">
+                      ${(Number(product.price) * (product.quantity || 1)).toFixed(2)}
+                    </p>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          <hr className="my-6" />
-
-          {/* Price Details */}
-          <div className="space-y-3 text-gray-600">
-            <div className="flex justify-between">
+          <div className="mt-6 pt-4 border-t-2 border-gray-200 space-y-3 text-gray-700">
+            <div className="flex justify-between text-sm sm:text-base">
               <p>Subtotal ({totalItems} items)</p>
-              <p>${subtotalValue.toFixed(2)}</p>
+              <p className="font-semibold">${subtotalValue.toFixed(2)}</p>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between text-sm sm:text-base">
               <p>Shipping</p>
-              <p>${shippingAmount.toFixed(2)}</p>
+              <p className="font-semibold">{shippingAmount > 0 ? `$${shippingAmount.toFixed(2)}` : 'FREE'}</p>
             </div>
+            {shippingAmount > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-800">
+                💡 Free shipping on orders over $99
+              </div>
+            )}
           </div>
 
-          <hr className="my-6" />
-
-          {/* Total */}
-          <div className="flex justify-between text-xl font-bold text-gray-900">
-            <p>Total</p>
-            <p>${totalPrice.toFixed(2)}</p>
+          <div className="mt-6 pt-4 border-t-2 border-gray-300 flex justify-between">
+            <p className="text-base sm:text-lg font-bold text-gray-900">Total</p>
+            <p className="text-xl sm:text-2xl font-bold text-black">${totalPrice.toFixed(2)}</p>
           </div>
         </div>
       </div>

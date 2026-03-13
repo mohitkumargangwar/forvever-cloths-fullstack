@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router';
 import { FiLayout, FiUsers, FiBox, FiShoppingBag, FiLogOut, FiCommand, FiX } from 'react-icons/fi';
 import { IoInfinite } from "react-icons/io5";
 import { useDispatch } from "react-redux";
+import { useEffect } from "react";
 import { logout } from "../../redux/slice/authSlice";
 import { clearCart } from "../../redux/slice/cartSlice";
 import { toast } from "sonner";
@@ -17,6 +18,18 @@ const navItems = [
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [isOpen]);
 
   const handleLogout = () => {
     dispatch(logout());

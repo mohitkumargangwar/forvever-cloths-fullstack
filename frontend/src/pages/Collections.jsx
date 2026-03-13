@@ -48,6 +48,18 @@ function Collections() {
     };
   }, [isSidebarOpen]);
 
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [isSidebarOpen]);
+
   // 🔹 Frontend side filtering + sorting (URL ke basis par)
   useEffect(() => {
     let processedProducts = Array.isArray(products) ? [...products] : [];
@@ -141,7 +153,7 @@ function Collections() {
   }, [products, searchString, searchParams]); // ✅ searchString + products
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen lg:h-[calc(100vh-7rem)] lg:min-h-0 lg:overflow-hidden">
       {/* Mobile Filter button */}
       <button
         onClick={toggleSidebar}
@@ -154,16 +166,15 @@ function Collections() {
       <aside
         ref={sidebarRef}
         className={`fixed inset-y-0 z-50 lg:z-0 left-0 w-64 bg-white transition-transform duration-300 transform
-        lg:sticky lg:top-0 lg:h-screen lg:translate-x-0
+        lg:relative lg:inset-y-auto lg:left-auto lg:top-auto lg:self-auto lg:h-full lg:translate-x-0
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-        data-lenis-prevent
       >
         <FilterSidebar />
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-grow">
-        <div className="p-4 flex-grow overflow-y-auto">
+      <div className="flex flex-col flex-grow min-h-0">
+        <div className="p-4 flex-grow overflow-y-auto min-h-0">
           <div className="flex flex-col space-y-2 sm:flex-row sm:gap-2 justify-between items-center mb-6">
             <h2 className="text-2xl uppercase font-bold">
               {collection ? collection : "All Collections"}

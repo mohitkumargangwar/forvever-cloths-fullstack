@@ -9,6 +9,7 @@ import GenderCollections from "../components/Products/GenderCollections";
 import NewArrivals from "../components/Products/NewArrivals";
 import ProductDetails from "../components/Products/ProductDetails";
 import ProductGrid from "../components/Products/ProductGrid";
+import { ProductGridShimmer } from "../components/Common/ShimmerLoader";
 
 import { fetchProductByFilters } from "../redux/slice/productSlice";
 
@@ -69,7 +70,9 @@ function Home() {
           <ProductDetails productId={bestsellerProduct._id} products={products} />
         </div>
       ) : (
-        <p className="text-center mb-6">Loading best seller product...</p>
+        <div className="mb-6">
+          <ProductGridShimmer count={1} />
+        </div>
       )}
 
       {/* Products Grid Section */}

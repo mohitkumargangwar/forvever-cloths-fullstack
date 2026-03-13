@@ -31,9 +31,7 @@ function CartContents({ cart, userId, guestId }) {
         const productId = product?.id || product?.productId || product?.product?._id;
         const uniqueKey = `${productId}-${product.size}-${product.color}`;
         return (
-        <div key={uniqueKey || index} className="flex items-start justify-between py-4 border-b"
-         data-lenis-prevent-wheel
-      data-lenis-prevent-touch>
+        <div key={uniqueKey || index} className="flex items-start justify-between py-4 border-b">
           <div className="flex items-start">
             <img
               src={product.image}
