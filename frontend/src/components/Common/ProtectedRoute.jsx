@@ -1,8 +1,20 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Navigate } from 'react-router';
-import { jwtDecode } from 'jwt-decode';
 import { logout } from '../../redux/slice/authSlice';
+
+const decodeJwtPayload = (token) => {
+  const payload = token.split('.')[1];
+  if (!payload) {
+    throw new Error('Invalid token');
+  }
+
+  // Convert base64url token payload into JSON string safely.
+  const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+  const json = atob(padded);
+  return JSON.parse(json);
+};
 
 
 const ProtectedRoute = ({ children }) => {
@@ -13,7 +25,7 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     if (token) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = decodeJwtPayload(token);
         if (decoded.exp && decoded.exp * 1000 < Date.now()) {
           dispatch(logout());
         }
@@ -29,7 +41,7 @@ const ProtectedRoute = ({ children }) => {
 
   // Check again in render (for fast redirect)
   try {
-    const decoded = jwtDecode(token);
+    const decoded = decodeJwtPayload(token);
     if (decoded.exp && decoded.exp * 1000 < Date.now()) {
       dispatch(logout());
       return <Navigate to="/login" replace />;
