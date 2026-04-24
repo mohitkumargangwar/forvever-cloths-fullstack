@@ -184,13 +184,7 @@ export default function Login() {
               </div>
               <button
                 type="button"
-                onClick={() => {
-                  if (email) {
-                    alert(`Password reset link would be sent to: ${email}\n\n(Feature coming soon!)`);
-                  } else {
-                    alert("Please enter your email address first.");
-                  }
-                }}
+                onClick={() => navigate('/forgot-password')}
                 className="font-medium text-black hover:underline"
               >
                 Forgot Password?

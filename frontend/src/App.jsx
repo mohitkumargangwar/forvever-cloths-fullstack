@@ -9,6 +9,7 @@ import UserLayout from "./components/Layout/UserLayout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import ContactUs from "./pages/ContactUs";
 import AboutUs from "./pages/AboutUs";
@@ -29,6 +30,7 @@ import ProductManagement from "./components/Admin/ProductManagement";
 import EditProductPage from "./components/Admin/EditProductPage";
 import OrderManagement from "./components/Admin/OrderManagement";
 import AdminProtectedRoute from "./components/Common/AdminProtectedRoute";
+import ProtectedRoute from "./components/Common/ProtectedRoute";
 
 // ScrollToTop Component
 const ScrollToTop = () => {
@@ -82,22 +84,23 @@ function App() {
           {/* User facing routes */}
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Home />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="contact" element={<ContactUs />} />
             <Route path="about" element={<AboutUs />} />
             <Route path="faqs" element={<FAQs />} />
             <Route path="features" element={<Features />} />
             <Route path="collections/:collection" element={<Collections />} />
             <Route path="product/:id" element={<ProductDetails />} />
-            <Route path="checkout" element={<CheckOut />} />
+            <Route path="checkout" element={<ProtectedRoute><CheckOut /></ProtectedRoute>} />
             <Route
               path="orderconfirmation"
-              element={<OrderConfirmationPage />}
+              element={<ProtectedRoute><OrderConfirmationPage /></ProtectedRoute>}
             />
-            <Route path="order/:id" element={<OrderDetailsPage />} />
+            <Route path="order/:id" element={<ProtectedRoute><OrderDetailsPage /></ProtectedRoute>} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
-            <Route path="/my-orders" element={<MyOrder />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="/my-orders" element={<ProtectedRoute><MyOrder /></ProtectedRoute>} />
           </Route>
 
           {/* Admin facing routes */}

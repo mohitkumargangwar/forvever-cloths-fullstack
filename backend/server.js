@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
+require("dotenv").config();
 
 const connectDB = require("./config/db");
 
@@ -14,8 +14,6 @@ const subscriberRoutes = require("./routes/subscribeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
-
-dotenv.config();
 
 const app = express();
 
@@ -44,6 +42,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoutes);
@@ -59,3 +58,10 @@ app.use("/api/admin/orders", adminOrderRoutes);
 /* ❌ DO NOT USE app.listen() on Vercel */
 /* ✅ Export Express App */
 module.exports = app;
+
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
